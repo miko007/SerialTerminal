@@ -1,0 +1,10 @@
+Pair	KEYWORD1
+first	KEYWORD2
+second	KEYWORD2
+SerialTerminal	KEYWORD1
+ParseCommand	KEYWORD2
+add	KEYWORD2
+loop	KEYWORD2
+size	KEYWORD2
+Command	KEYWORD1
+maschinendeck LITERAL1
