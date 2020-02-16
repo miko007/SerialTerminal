@@ -4,7 +4,7 @@
 
 namespace maschinendeck {
 
-  #ifndef ST_FLAG_NOBUILTIN
+  #if not defined ST_FLAG_NOBUILTIN && defined E2END
   #include "EEPROM.h"
   void printEEPROM(String opts) {
     Serial.print("offset\t");
@@ -69,7 +69,7 @@ namespace maschinendeck {
       
     public:
       SerialTerminal(long baudrate) : size_(0), firstRun(true) {
-        #ifndef ST_FLAG_NOBUILTIN
+        #if not defined ST_FLAG_NOBUILTIN && defined E2END
           this->add("eeprom", &printEEPROM, "prints the contents of EEPROM");
         #endif     
         Serial.begin(baudrate);
@@ -94,12 +94,12 @@ namespace maschinendeck {
       }
 
       void loop() {
+        #ifndef ST_FLAG_NOHELP
         if (this->firstRun) {
           this->firstRun = false;
-          #ifndef ST_FLAG_NOHELP
             this->printCommands();
-          #endif
         }
+        #endif
         if (!Serial.available())
           return;
         String message = Serial.readString();
