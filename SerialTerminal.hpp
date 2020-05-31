@@ -1,6 +1,6 @@
 #pragma once
 
-#define ST_VERSION "1.0.2"
+#define ST_VERSION "1.0.3"
 
 #include <Arduino.h>
 
@@ -142,7 +142,7 @@ namespace maschinendeck {
         Pair<String, String> command = SerialTerminal::ParseCommand(this->message);
         this->message = "";
 
-        for (uint8_t i = 0; i <= this->size_; i++) {
+        for (uint8_t i = 0; i < this->size_; i++) {
           if (this->commands[i]->command == command.first()) {
             this->commands[i]->callback(command.second());
           }
