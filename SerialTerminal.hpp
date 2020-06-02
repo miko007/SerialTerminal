@@ -1,6 +1,6 @@
 #pragma once
 
-#define ST_VERSION "1.0.2"
+#define ST_VERSION "1.0.3"
 
 #include <Arduino.h>
 
@@ -121,9 +121,16 @@ namespace maschinendeck {
             }
             if (isAscii(car))
                 Serial.print(car);
+            // Check if user ended the line
             if (car == '\r') {
                 Serial.print("\r\n");
                 commandComplete = true;
+                // If there are more data on the line, drop a \n, if it is
+                // there. Some terminals may send both, giving 
+                // an extra lineend, if we do not drop it.
+                if (Serial.available() && Serial.peek() == '\n') {
+                    Serial.read();
+                }
                 break;
             }
             this->message += car;
@@ -142,12 +149,22 @@ namespace maschinendeck {
         Pair<String, String> command = SerialTerminal::ParseCommand(this->message);
         this->message = "";
 
-        for (uint8_t i = 0; i <= this->size_; i++) {
+        #ifndef ST_FLAG_NOPROMPT
+        bool found = false;
+        #endif
+        for (uint8_t i = 0; i < this->size_; i++) {
           if (this->commands[i]->command == command.first()) {
             this->commands[i]->callback(command.second());
+            #ifndef ST_FLAG_NOPROMPT
+            found = true;
+            #endif
           }
         }
         #ifndef ST_FLAG_NOPROMPT
+        if (!found) {
+            Serial.print(command.first());
+            Serial.print(": command not found");
+        }
         Serial.print("\r\nst> ");
         #endif
       }

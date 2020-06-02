@@ -21,7 +21,7 @@ void addInt(String opts) {
 
 void setup() {
 	term = new maschinendeck::SerialTerminal(38400);
-	term->add("add", &addInt, "adds to integers");
+	term->add("add", &addInt, "adds two integers");
 }
 
 void loop() {
@@ -33,6 +33,7 @@ You can change the behavior of the library, by setting some flags:
 
 * `ST_FLAG_NOHELP` - removes the help screen normally printed on startup
 * `ST_FLAG_NOBUILTIN` - removes all default commands, if you do not need them
+* `ST_FLAG_NOPROMPT` - do not print a prompt
 
 You simply define them before the include of `SerialTerminal.h`:
 
