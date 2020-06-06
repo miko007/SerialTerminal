@@ -11,6 +11,11 @@ namespace maschinendeck {
         return static_cast<T&&>(object);
     }
 
+    template <typename T>
+    T&& forward(T& param) {
+        return static_cast<T&&>(param);
+    }
+
     #if not defined ST_FLAG_NOBUILTIN && defined E2END
     #include "EEPROM.h"
     void printEEPROM(String opts) {
@@ -48,20 +53,23 @@ namespace maschinendeck {
     };
 
     template <typename T, typename U>
-        class Pair {
-        private:
-            T first_;
-            U second_;
-        public:
-            Pair(T first, U second) : first_(move(first)), second_(move(second)) {
-            }
-            T& first() {
-                    return this->first_;
-            }
+    struct Pair {
+        T first_;
+        U second_;
 
-            U& second() {
-                    return this->second_;
-            }
+        Pair()                       : first_(), second_() {}
+        Pair(T&& first, U&& second)  : first_(forward(first)), second_(forward(second)) {}
+        Pair(const Pair<T, U>& pair) : first_(pair.first_), second_(pair.second_) {}
+        Pair(Pair<T, U>&& pair)      : first_(move(pair.first_)), second_(move(pair.second_)) {}
+
+        const T& first() const  {
+                return this->first_;
+        }
+
+        const U& second() const {
+                return this->second_;
+        }
+
     };
 
     class SerialTerminal {
@@ -170,9 +178,9 @@ namespace maschinendeck {
                 #ifndef ST_FLAG_NOPROMPT
                 bool found = false;
                 #endif
-                for (auto& cmd : this->commands) {
-                    if (cmd->command == command.first()) {
-                        cmd->callback(command.second());
+                for (uint8_t i = 0; i < this->size_; i++) {
+                    if (this->commands[i]->command == command.first()) {
+                        this->commands[i]->callback(command.second());
                         #ifndef ST_FLAG_NOPROMPT
                         found = true;
                         #endif
@@ -199,7 +207,7 @@ namespace maschinendeck {
                 keyword.trim();
                 message.trim();
 
-                return Pair<String, String>(keyword, message);
+                return Pair<String, String>(move(keyword), move(message));
             }
     };
 
