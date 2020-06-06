@@ -170,9 +170,9 @@ namespace maschinendeck {
                 #ifndef ST_FLAG_NOPROMPT
                 bool found = false;
                 #endif
-                for (uint8_t i = 0; i < this->size_; i++) {
-                    if (this->commands[i]->command == command.first()) {
-                        this->commands[i]->callback(command.second());
+                for (auto& cmd : this->commands) {
+                    if (cmd->command == command.first()) {
+                        cmd->callback(command.second());
                         #ifndef ST_FLAG_NOPROMPT
                         found = true;
                         #endif
