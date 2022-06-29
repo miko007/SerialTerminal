@@ -57,7 +57,7 @@ namespace maschinendeck {
 
   class SerialTerminal {
     private:
-      Command* commands[64];
+      Command* commands[256];
       uint8_t size_;
       bool firstRun;
       String message;
@@ -182,6 +182,26 @@ namespace maschinendeck {
         message.trim();
 
         return Pair<String, String>(keyword, message);
+      }
+
+      static String ParseArgument(String message) {
+        String keyword = "";
+        for (auto& car : message) {
+          if (car == '"')
+            break;
+          keyword += car;
+        }
+        if (keyword != "")
+        message.remove(0, keyword.length());
+        keyword.trim();
+        message.trim();
+        int msg_len = message.length();
+        if (msg_len > 0) {
+            message.remove(0,1);
+            message.remove(msg_len-2);
+        }
+
+        return message;
       }
   };
 
