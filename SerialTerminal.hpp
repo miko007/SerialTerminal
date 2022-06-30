@@ -193,7 +193,6 @@ namespace maschinendeck {
         }
         if (keyword != "")
         message.remove(0, keyword.length());
-        keyword.trim();
         message.trim();
         int msg_len = message.length();
         if (msg_len > 0) {

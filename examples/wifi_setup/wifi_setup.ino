@@ -1,7 +1,7 @@
 
 /*********************************************************************
- This sample file is part of the Serial Terminal Library
- esp32-wifi-cli implementation:
+ This sample file is part of the esp32-wifi-cli
+ Source code:
  https://github.com/hpsaturn/esp32-wifi-cli
 
  Copyright (c) 2022, @hpsaturn, Antonio Vanegas
