@@ -141,6 +141,9 @@ namespace maschinendeck {
                 #if not defined ST_FLAG_NOBUILTIN && defined E2END
                 this->add("eeprom", &printEEPROM, "prints the contents of EEPROM");
                 #endif
+				#if not defined ST_FLAG_NOHELP && not defined ST_FLAG_NOBUILTIN
+				this->add("help", [](){}, "shows this help screen");
+				#endif
                 if (baudrate > 0)
                     Serial.begin(baudrate);
                 #ifndef ST_FLAG_NOHELP
@@ -242,6 +245,12 @@ namespace maschinendeck {
                 #ifndef ST_FLAG_NOPROMPT
                 bool found = false;
                 #endif
+				#if not defined ST_FLAG_NOHELP && not defined ST_FLAG_NOBUILTIN
+				if (command.first() == "help") {
+					this->printCommands();
+					return;
+				}
+				#endif
                 for (uint8_t i = 0; i < this->size_; i++) {
                     if (this->commands[i]->command == command.first()) {
                         this->commands[i]->callback(command.second());
