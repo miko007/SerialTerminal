@@ -1,4 +1,14 @@
-### Version 1.1.1 | 2020/06/02
+## Version 1.1.2 | 2022/08/19
+
+### Changed
+* added more comments to the code, to explain what is happening more in detail
+
+### Added
+* `.gitignore` file
+* `help` builtin, so users can type *"help"* to list all the available commands
+
+
+## Version 1.1.1 | 2020/06/02
 
 ### Changed
 * `README.md` to reflect all existing compiler flags
