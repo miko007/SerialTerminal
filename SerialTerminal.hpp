@@ -1,6 +1,6 @@
 #pragma once
 
-#define ST_VERSION "1.1.3"
+#define ST_VERSION "1.1.2"
 
 #include <Arduino.h>
 
