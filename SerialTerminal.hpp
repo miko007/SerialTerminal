@@ -289,6 +289,25 @@ namespace maschinendeck {
 
                 return Pair<String, String>(move(keyword), move(message));
             }
+
+            static String ParseArgument(String message) {
+                String keyword = "";
+                for (auto& car : message) {
+                    if (car == '"')
+                        break;
+                    keyword += car;
+                }
+                if (keyword != "")
+                    message.remove(0, keyword.length());
+                message.trim();
+                int msg_len = message.length();
+                if (msg_len > 0) {
+                    message.remove(0, 1);
+                    message.remove(msg_len - 2);
+                }
+
+                return message;
+            }
     };
 
 }
