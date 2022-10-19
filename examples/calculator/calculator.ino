@@ -3,6 +3,7 @@
 maschinendeck::SerialTerminal* term;
 
 void addInt(String opts) {
+    auto[first, rest] = maschinendeck::SerialTerminal::ParseCommand(opts);
   maschinendeck::Pair<String, String> operands = maschinendeck::SerialTerminal::ParseCommand(opts);
   Serial.print(operands.first());
   Serial.print(" + ");

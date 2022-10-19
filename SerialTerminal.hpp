@@ -1,21 +1,42 @@
 #pragma once
 
-#define ST_VERSION "1.1.1"
+#define ST_VERSION "1.1.2"
 
 #include <Arduino.h>
 
 namespace maschinendeck {
 
+    /**
+     * Naive implementation of `std::move`
+     *
+     * @author Michael Ochmann <miko@maschinendeck.org>
+     * @since 1.1.2
+     */
     template <typename T>
     T&& move(T object) {
         return static_cast<T&&>(object);
     }
 
+    /**
+     * Naive implementation of `std::forward`
+     *
+     * @author Michael Ochmann <miko@maschinendeck.org>
+     * @since 1.1.2
+     */
     template <typename T>
     T&& forward(T& param) {
         return static_cast<T&&>(param);
     }
 
+    /**
+     * Prints the contents of EEPROM as a HEX table, if an EEPROM is present.
+     *
+     * It gets registered as al builtin command to the SerialTerminal, when the
+     * flag ST_FLAG_NOBUILTIN is not set.
+     *
+     * @author Michael Ochmann <miko@maschinendeck.org>
+     * @since 0.0.1
+     */
     #if not defined ST_FLAG_NOBUILTIN && defined E2END
     #include "EEPROM.h"
     void printEEPROM(String opts) {
@@ -52,6 +73,16 @@ namespace maschinendeck {
                 description(move(description)) {}
     };
 
+    /**
+     * Naive implementation of `std::pair`
+     *
+     * this exists, because c++ does not support multiple return types and we
+     * want to return a word and the rest of the string in
+     * `maschinendeck::ParseCommand()`
+     *
+     * @author Michael Ochmann <miko@maschinendeck.org>
+     * @since 0.0.1
+     */
     template <typename T, typename U>
     struct Pair {
         T first_;
@@ -72,6 +103,12 @@ namespace maschinendeck {
 
     };
 
+    /**
+     * The actual SerialTerminal class
+     *
+     * @author Michael Ochmann <miko@maschinendeck.org>
+     * @since 0.0.1
+     */
     class SerialTerminal {
         private:
             Command* commands[64];
@@ -79,6 +116,15 @@ namespace maschinendeck {
             bool firstRun;
             String message;
 
+            /**
+             * Prints a list of all commands
+             *
+             * If the flag `ST_FLAG_NOHELP` is not set, this prints a list of
+             * all registered commands with their description text.
+             *
+             * @author Michael Ochmann <miko@maschinendeck.org>
+             * @since 0.0.1
+             */
             #ifndef ST_FLAG_NOHELP
             void printCommands() {
                 for (uint8_t i = 0; i < this->size_; i++) {
@@ -122,10 +168,21 @@ namespace maschinendeck {
                 this->size_++;
             }
 
+            /**
+             * Returns the actual number of registered commands
+             */
             uint8_t size() {
                 return this->size_ + 1;
             }
 
+            /**
+             * Parses serial input and checks for occuring commands
+             *
+             * Must be called in the mail `loop()` function
+             *
+             * @author Michael Ochmann <miko@maschinendeck.org>
+             * @since 0.0.1
+             */
             void loop() {
                 #ifndef ST_FLAG_NOHELP
                 if (this->firstRun) {
@@ -138,6 +195,8 @@ namespace maschinendeck {
                 bool commandComplete = false;
                 while (Serial.available()) {
                     char car = Serial.read();
+
+                    //this enables the use of backspace to delete characters
                     if (car == 127 && this->message.length() > 0) {
                         Serial.print("\e[1D");
                         Serial.print(' ');
@@ -145,18 +204,23 @@ namespace maschinendeck {
                         this->message.remove(this->message.length() - 1);
                         continue;
                     }
+                    /*
+                        this makes shure, the users input gets printed back to
+                        his serial console
+                    */
                     if (isAscii(car))
                         Serial.print(car);
                     // Check if user ended the line
                     if (car == '\r') {
                         Serial.print("\r\n");
                         commandComplete = true;
-                        // If there are more data on the line, drop a \n, if it is
-                        // there. Some terminals may send both, giving
-                        // an extra lineend, if we do not drop it.
-                        if (Serial.available() && Serial.peek() == '\n') {
+                        /*
+                            If there are more data on the line, drop a \n, if it is
+                            there. Some terminals may send both, giving
+                            an extra lineend, if we do not drop it.
+                        */
+                        if (Serial.available() && Serial.peek() == '\n')
                             Serial.read();
-                        }
                         break;
                     }
                     this->message += car;
@@ -195,6 +259,13 @@ namespace maschinendeck {
                 #endif
             }
 
+            /**
+             * Parses a string and returns a pair containing the first word and
+             * the rest string
+             *
+             * @author Michael Ochmann <miko@maschinendeck.org>
+             * @since 0.0.1
+             */
             static Pair<String, String> ParseCommand(String& message) {
                 String keyword = "";
                 for (auto& car : message) {
